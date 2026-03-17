@@ -38,7 +38,6 @@ def omega_optimal(n: int) -> float:
 
 
 def apply_boundary(phi: np.ndarray, length_m: float, bc: BoundaryCase) -> None:
-    """Apply simple Dirichlet BC used for Task 1 demo."""
     value = 0.0 if bc == "all0" else 100.0
     phi[0, :] = value
     phi[-1, :] = value
@@ -49,7 +48,6 @@ def apply_boundary(phi: np.ndarray, length_m: float, bc: BoundaryCase) -> None:
 def make_charge(n: int, length_m: float, case: str) -> np.ndarray:
     """
     Create a charge density field f (C m^-2).
-    For Task 1 you just need *some* f to test convergence.
     """
     f = np.zeros((n, n), dtype=float)
     if case == "none":

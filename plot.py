@@ -9,7 +9,7 @@ OUT_PATH = "out/phi_plot.png"
 data = np.load(DATA_PATH)
 phi = data["phi"]
 
-# For all100 + no charge, the meaningful view is the deviation from 100 V.
+# For all100 + no charge, view is the deviation from 100 V.
 dphi = phi - 100.0
 
 # Clamp colors so tiny ~1e-8 noise doesn't look like structure.
