@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
+
 """
 Task 1: Deterministic relaxation / over-relaxation (SOR) Poisson solver on a 2D square grid.
 
 Conventions
 - Array phi[i, j] where i is y-index (0 bottom -> n-1 top), j is x-index (0 left -> n-1 right).
 - Dirichlet boundary conditions: boundary phi values are fixed each iteration.
-- Update rule follows assignment hint:
     phi'_{i,j} = ω [ f_{i,j} + 1/4*(neighbors) ] + (1-ω) phi_{i,j}
 Optimal ω:
     ω = 2 / (1 + sin(pi/N))
