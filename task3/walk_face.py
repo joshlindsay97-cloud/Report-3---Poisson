@@ -127,7 +127,7 @@ def main() -> None:
     h = grid.h
     nwalk = int(a.walkers)
 
-    g_charge = (h * h) * (v_glob.astype(np.float64) / nwalk)
+    g_charge = 0.25 * (h * h) * (v_glob.astype(np.float64) / nwalk)
     g_exit_prob = e_glob.astype(np.float64) / nwalk
     g_exit_sig = np.sqrt(g_exit_prob * (1.0 - g_exit_prob) / nwalk)
 
