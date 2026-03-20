@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
 """
 Merge Task 4 (Green/MC) results with Task 5 (SOR) results.
 
