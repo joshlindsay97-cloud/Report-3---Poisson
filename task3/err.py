@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+# SPDX-License-Identifier: MIT
 import numpy as np
 
 CASES = [

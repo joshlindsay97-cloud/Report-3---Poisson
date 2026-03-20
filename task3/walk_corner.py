@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+# SPDX-License-Identifier: MIT
 """
 Run:
 mpirun -np 16 python walk_corner.py --n 51 --length 1.0 --start-x 0.02 --start-y 0.02 --walkers 200000

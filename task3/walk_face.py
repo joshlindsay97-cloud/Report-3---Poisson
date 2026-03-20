@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+# SPDX-License-Identifier: MIT
 """
 Task 3 (face point): MPI random-walk Green's function estimator.
 
