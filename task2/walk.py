@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+# SPDX-License-Identifier: MIT
 """
 Task 2: MPI random-walk Green's function estimator on an N×N grid.
 
