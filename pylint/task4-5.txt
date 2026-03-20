@@ -1,0 +1,131 @@
+************* Module task4_calc
+task4-5/task4_calc.py:30:0: C0115: Missing class docstring (missing-class-docstring)
+task4-5/task4_calc.py:30:0: R0902: Too many instance attributes (8/7) (too-many-instance-attributes)
+task4-5/task4_calc.py:41:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/task4_calc.py:48:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/task4_calc.py:62:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/task4_calc.py:85:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/task4_calc.py:86:4: C0103: Variable name "L" doesn't conform to snake_case naming style (invalid-name)
+task4-5/task4_calc.py:118:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/task4_calc.py:126:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/task4_calc.py:130:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/task4_calc.py:130:0: R0914: Too many local variables (19/15) (too-many-locals)
+task4-5/task4_calc.py:157:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+************* Module task5_sor
+task4-5/task5_sor.py:12:0: C0301: Line too long (104/100) (line-too-long)
+task4-5/task5_sor.py:70:0: C0325: Unnecessary parens after '=' keyword (superfluous-parens)
+task4-5/task5_sor.py:71:0: C0325: Unnecessary parens after '=' keyword (superfluous-parens)
+task4-5/task5_sor.py:72:0: C0325: Unnecessary parens after '=' keyword (superfluous-parens)
+task4-5/task5_sor.py:73:0: C0325: Unnecessary parens after '=' keyword (superfluous-parens)
+task4-5/task5_sor.py:27:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/task5_sor.py:43:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/task5_sor.py:60:4: C0103: Variable name "L" doesn't conform to snake_case naming style (invalid-name)
+task4-5/task5_sor.py:104:4: C0103: Variable name "L" doesn't conform to snake_case naming style (invalid-name)
+task4-5/task5_sor.py:135:0: C0115: Missing class docstring (missing-class-docstring)
+task4-5/task5_sor.py:143:0: R0913: Too many arguments (6/5) (too-many-arguments)
+task4-5/task5_sor.py:143:0: R0914: Too many local variables (19/15) (too-many-locals)
+task4-5/task5_sor.py:188:16: R1731: Consider using 'max_upd = max(max_upd, d)' instead of unnecessary if block (consider-using-max-builtin)
+task4-5/task5_sor.py:210:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/task5_sor.py:210:0: R0914: Too many local variables (19/15) (too-many-locals)
+task4-5/task5_sor.py:275:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+************* Module compare
+task4-5/compare.py:19:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/compare.py:29:0: C0116: Missing function or method docstring (missing-function-docstring)
+************* Module compare_sigma
+task4-5/compare_sigma.py:23:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/compare_sigma.py:32:0: C0116: Missing function or method docstring (missing-function-docstring)
+************* Module mc_sigma
+task4-5/mc_sigma.py:33:0: C0301: Line too long (117/100) (line-too-long)
+task4-5/mc_sigma.py:49:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/mc_sigma.py:58:0: C0115: Missing class docstring (missing-class-docstring)
+task4-5/mc_sigma.py:65:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/mc_sigma.py:67:4: C0206: Consider iterating with .items() (consider-using-dict-items)
+task4-5/mc_sigma.py:67:17: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
+task4-5/mc_sigma.py:86:4: C0103: Variable name "L" doesn't conform to snake_case naming style (invalid-name)
+task4-5/mc_sigma.py:116:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/mc_sigma.py:121:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/mc_sigma.py:121:0: R0914: Too many local variables (19/15) (too-many-locals)
+task4-5/mc_sigma.py:157:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+task4-5/mc_sigma.py:44:0: W0611: Unused Tuple imported from typing (unused-import)
+************* Module task4-to_xlsx
+task4-5/task4-to_xlsx.py:48:0: C0301: Line too long (122/100) (line-too-long)
+task4-5/task4-to_xlsx.py:1:0: C0103: Module name "task4-to_xlsx" doesn't conform to snake_case naming style (invalid-name)
+task4-5/task4-to_xlsx.py:20:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/task4-to_xlsx.py:27:0: C0116: Missing function or method docstring (missing-function-docstring)
+task4-5/task4-to_xlsx.py:37:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+task4-5/task4-to_xlsx.py:1:0: R0801: Similar lines in 2 files
+==mc_sigma:[85:112]
+==task4_calc:[85:114]
+    L = h * (n - 1)
+    f = np.zeros((n, n), dtype=float)
+
+    if case == "0_none":
+        return f
+
+    if case == "U_uniform_total10C":
+        f[:, :] = 10.0  # 10 C over 1 m^2 => 10 C m^-2
+        return f
+
+    if case == "G_gradient_top1_bottom0":
+        for i in range(n):
+            y = i * h  # y=0 bottom, y=L top
+            f[i, :] = y / L
+        return f
+
+    if case == "E_exp_center":
+        cx = 0.5 * L
+        cy = 0.5 * L
+        for i in range(n):
+            y = i * h
+            for j in range(n):
+                x = j * h
+                r = math.hypot(x - cx, y - cy)
+                f[i, j] = math.exp(-10.0 * r)
+        return f
+ (duplicate-code)
+task4-5/task4-to_xlsx.py:1:0: R0801: Similar lines in 2 files
+==task4_calc:[104:119]
+==task5_sor:[120:133]
+        cx = 0.5 * L
+        cy = 0.5 * L
+        for i in range(n):
+            y = i * h
+            for j in range(n):
+                x = j * h
+                r = math.hypot(x - cx, y - cy)
+                f[i, j] = math.exp(-10.0 * r)
+        return f
+
+    raise ValueError(f"Unknown charge case: {case}")
+
+ (duplicate-code)
+task4-5/task4-to_xlsx.py:1:0: R0801: Similar lines in 2 files
+==mc_sigma:[102:112]
+==task5_sor:[120:130]
+        cx = 0.5 * L
+        cy = 0.5 * L
+        for i in range(n):
+            y = i * h
+            for j in range(n):
+                x = j * h
+                r = math.hypot(x - cx, y - cy)
+                f[i, j] = math.exp(-10.0 * r)
+        return f
+ (duplicate-code)
+task4-5/task4-to_xlsx.py:1:0: R0801: Similar lines in 2 files
+==compare:[59:69]
+==compare_sigma:[67:77]
+    with out_path.open("w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(out_rows[0].keys()))
+        w.writeheader()
+        w.writerows(out_rows)
+
+    print(f"wrote {out_path}")
+
+
+if __name__ == "__main__":
+    main() (duplicate-code)
+
+-----------------------------------
+Your code has been rated at 8.78/10
+

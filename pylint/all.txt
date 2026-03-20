@@ -1,0 +1,652 @@
+************* Module solver
+task1/solver.py:157:16: R1731: Consider using 'max_update = max(max_update, diff)' instead of unnecessary if block (consider-using-max-builtin)
+************* Module plot
+task1/plot.py:57:0: C0103: Function name "save_dev_uV" doesn't conform to snake_case naming style (invalid-name)
+task1/plot.py:58:4: C0103: Variable name "dev_uV" doesn't conform to snake_case naming style (invalid-name)
+************* Module plot_scale
+task3/plot_scale.py:9:4: C0103: Variable name "P" doesn't conform to snake_case naming style (invalid-name)
+task3/plot_scale.py:10:4: C0103: Variable name "T" doesn't conform to snake_case naming style (invalid-name)
+task3/plot_scale.py:11:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+task3/plot_scale.py:23:4: C0103: Variable name "P" doesn't conform to snake_case naming style (invalid-name)
+task3/plot_scale.py:24:4: C0103: Variable name "T" doesn't conform to snake_case naming style (invalid-name)
+task3/plot_scale.py:30:4: C0103: Variable name "S" doesn't conform to snake_case naming style (invalid-name)
+task3/plot_scale.py:31:4: C0103: Variable name "E" doesn't conform to snake_case naming style (invalid-name)
+task3/plot_scale.py:8:0: R0915: Too many statements (53/50) (too-many-statements)
+************* Module task5_sor
+task4-5/task5_sor.py:70:0: C0325: Unnecessary parens after '=' keyword (superfluous-parens)
+task4-5/task5_sor.py:71:0: C0325: Unnecessary parens after '=' keyword (superfluous-parens)
+task4-5/task5_sor.py:72:0: C0325: Unnecessary parens after '=' keyword (superfluous-parens)
+task4-5/task5_sor.py:73:0: C0325: Unnecessary parens after '=' keyword (superfluous-parens)
+task4-5/task5_sor.py:60:4: C0103: Variable name "L" doesn't conform to snake_case naming style (invalid-name)
+task4-5/task5_sor.py:104:4: C0103: Variable name "L" doesn't conform to snake_case naming style (invalid-name)
+task4-5/task5_sor.py:188:16: R1731: Consider using 'max_upd = max(max_upd, d)' instead of unnecessary if block (consider-using-max-builtin)
+task4-5/task5_sor.py:275:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+************* Module task4-to_xlsx
+task4-5/task4-to_xlsx.py:1:0: C0103: Module name "task4-to_xlsx" doesn't conform to snake_case naming style (invalid-name)
+task4-5/task4-to_xlsx.py:37:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+************* Module task4_calc
+task4-5/task4_calc.py:30:0: R0902: Too many instance attributes (8/7) (too-many-instance-attributes)
+task4-5/task4_calc.py:86:4: C0103: Variable name "L" doesn't conform to snake_case naming style (invalid-name)
+task4-5/task4_calc.py:157:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+************* Module mc_sigma
+task4-5/mc_sigma.py:67:4: C0206: Consider iterating with .items() (consider-using-dict-items)
+task4-5/mc_sigma.py:67:17: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
+task4-5/mc_sigma.py:86:4: C0103: Variable name "L" doesn't conform to snake_case naming style (invalid-name)
+task4-5/mc_sigma.py:157:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+task4-5/mc_sigma.py:44:0: W0611: Unused Tuple imported from typing (unused-import)
+************* Module compare
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==walk_centre:[48:143]
+==walk_corner:[48:143]
+    return p.parse_args()
+
+
+def split(total: int, rank: int, size: int) -> int:
+    base = total // size
+    rem = total % size
+    return base + (1 if rank < rem else 0)
+
+
+def step(i: int, j: int, rng: np.random.Generator) -> Tuple[int, int]:
+    r = rng.integers(0, 4)
+    if r == 0:
+        return i + 1, j
+    if r == 1:
+        return i - 1, j
+    if r == 2:
+        return i, j + 1
+    return i, j - 1
+
+
+def run(grid: Grid, start: Tuple[int, int], walkers: int, rng: np.random.Generator):
+    n = grid.n
+    visits = np.zeros((n, n), dtype=np.int64)
+    exits = np.zeros((n, n), dtype=np.int64)
+    steps_total = 0
+
+    si, sj = start
+    if grid.is_bnd(si, sj):
+        raise ValueError("Start must be interior (not on boundary).")
+
+    for _ in range(walkers):
+        i, j = si, sj
+        while True:
+            visits[i, j] += 1
+            steps_total += 1
+            i, j = step(i, j, rng)
+            if grid.is_bnd(i, j):
+                exits[i, j] += 1
+                break
+
+    return visits, exits, steps_total
+
+
+def main() -> None:
+    a = args()
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
+    grid = Grid(n=a.n, length=a.length)
+    start = grid.ij(a.start_x, a.start_y)
+
+    local_n = split(a.walkers, rank, size)
+    rng = np.random.default_rng(a.seed + 1000003 * rank)
+
+    v_loc, e_loc, s_loc = run(grid, start, local_n, rng)
+
+    v_glob = np.zeros_like(v_loc)
+    e_glob = np.zeros_like(e_loc)
+    s_glob = comm.allreduce(s_loc, op=MPI.SUM)
+
+    comm.Reduce(v_loc, v_glob, op=MPI.SUM, root=0)
+    comm.Reduce(e_loc, e_glob, op=MPI.SUM, root=0)
+
+    if rank == 0:
+        h = grid.h
+        nwalk = int(a.walkers)
+
+        g_charge = 0.25 * (h * h) * (v_glob.astype(np.float64) / nwalk)
+        g_exit_prob = e_glob.astype(np.float64) / nwalk
+        g_exit_sig = np.sqrt(g_exit_prob * (1.0 - g_exit_prob) / nwalk)
+
+        import os
+        os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
+        np.savez_compressed(
+            a.out,
+            n=a.n,
+            length=a.length,
+            h=h,
+            start_i=start[0],
+            start_j=start[1],
+            walkers=nwalk,
+            steps_total=int(s_glob),
+            visits=v_glob,
+            exits=e_glob,
+            g_charge=g_charge,
+            g_exit_prob=g_exit_prob,
+            g_exit_sig=g_exit_sig,
+        )
+        print(f"saved {a.out}")
+        print(f"n={a.n} h={h:.6g} start={start} walkers={nwalk} steps_total={s_glob}")
+
+
+if __name__ == "__main__":
+    main() (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==walk:[26:124]
+==walk_centre:[18:116]
+@dataclass(frozen=True)
+class Grid:
+    n: int
+    length: float
+
+    @property
+    def h(self) -> float:
+        return self.length / (self.n - 1)
+
+    def is_bnd(self, i: int, j: int) -> bool:
+        n = self.n
+        return i == 0 or j == 0 or i == n - 1 or j == n - 1
+
+    def ij(self, x: float, y: float) -> Tuple[int, int]:
+        i = int(round(y / self.h))
+        j = int(round(x / self.h))
+        i = max(0, min(self.n - 1, i))
+        j = max(0, min(self.n - 1, j))
+        return i, j
+
+
+def args() -> argparse.Namespace:
+    p = argparse.ArgumentParser()
+    p.add_argument("--n", type=int, default=51)
+    p.add_argument("--length", type=float, default=1.0)
+    p.add_argument("--start-x", type=float, default=0.5)
+    p.add_argument("--start-y", type=float, default=0.5)
+    p.add_argument("--walkers", type=int, default=200000)
+    p.add_argument("--seed", type=int, default=12345)
+    p.add_argument("--out", type=str, default="out/greens.npz")
+    return p.parse_args()
+
+
+def split(total: int, rank: int, size: int) -> int:
+    base = total // size
+    rem = total % size
+    return base + (1 if rank < rem else 0)
+
+
+def step(i: int, j: int, rng: np.random.Generator) -> Tuple[int, int]:
+    r = rng.integers(0, 4)
+    if r == 0:
+        return i + 1, j
+    if r == 1:
+        return i - 1, j
+    if r == 2:
+        return i, j + 1
+    return i, j - 1
+
+
+def run(grid: Grid, start: Tuple[int, int], walkers: int, rng: np.random.Generator):
+    n = grid.n
+    visits = np.zeros((n, n), dtype=np.int64)
+    exits = np.zeros((n, n), dtype=np.int64)
+    steps_total = 0
+
+    si, sj = start
+    if grid.is_bnd(si, sj):
+        raise ValueError("Start must be interior (not on boundary).")
+
+    for _ in range(walkers):
+        i, j = si, sj
+        while True:
+            visits[i, j] += 1
+            steps_total += 1
+            i, j = step(i, j, rng)
+            if grid.is_bnd(i, j):
+                exits[i, j] += 1
+                break
+
+    return visits, exits, steps_total
+
+
+def main() -> None:
+    a = args()
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
+    grid = Grid(n=a.n, length=a.length)
+    start = grid.ij(a.start_x, a.start_y)
+
+    local_n = split(a.walkers, rank, size)
+    rng = np.random.default_rng(a.seed + 1000003 * rank)
+
+    v_loc, e_loc, s_loc = run(grid, start, local_n, rng)
+
+    v_glob = np.zeros_like(v_loc)
+    e_glob = np.zeros_like(e_loc)
+    s_glob = comm.allreduce(s_loc, op=MPI.SUM)
+
+    comm.Reduce(v_loc, v_glob, op=MPI.SUM, root=0)
+    comm.Reduce(e_loc, e_glob, op=MPI.SUM, root=0)
+
+    if rank == 0:
+        h = grid.h
+        nwalk = int(a.walkers)
+ (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==walk:[56:124]
+==walk_corner:[48:116]
+    return p.parse_args()
+
+
+def split(total: int, rank: int, size: int) -> int:
+    base = total // size
+    rem = total % size
+    return base + (1 if rank < rem else 0)
+
+
+def step(i: int, j: int, rng: np.random.Generator) -> Tuple[int, int]:
+    r = rng.integers(0, 4)
+    if r == 0:
+        return i + 1, j
+    if r == 1:
+        return i - 1, j
+    if r == 2:
+        return i, j + 1
+    return i, j - 1
+
+
+def run(grid: Grid, start: Tuple[int, int], walkers: int, rng: np.random.Generator):
+    n = grid.n
+    visits = np.zeros((n, n), dtype=np.int64)
+    exits = np.zeros((n, n), dtype=np.int64)
+    steps_total = 0
+
+    si, sj = start
+    if grid.is_bnd(si, sj):
+        raise ValueError("Start must be interior (not on boundary).")
+
+    for _ in range(walkers):
+        i, j = si, sj
+        while True:
+            visits[i, j] += 1
+            steps_total += 1
+            i, j = step(i, j, rng)
+            if grid.is_bnd(i, j):
+                exits[i, j] += 1
+                break
+
+    return visits, exits, steps_total
+
+
+def main() -> None:
+    a = args()
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
+    grid = Grid(n=a.n, length=a.length)
+    start = grid.ij(a.start_x, a.start_y)
+
+    local_n = split(a.walkers, rank, size)
+    rng = np.random.default_rng(a.seed + 1000003 * rank)
+
+    v_loc, e_loc, s_loc = run(grid, start, local_n, rng)
+
+    v_glob = np.zeros_like(v_loc)
+    e_glob = np.zeros_like(e_loc)
+    s_glob = comm.allreduce(s_loc, op=MPI.SUM)
+
+    comm.Reduce(v_loc, v_glob, op=MPI.SUM, root=0)
+    comm.Reduce(e_loc, e_glob, op=MPI.SUM, root=0)
+
+    if rank == 0:
+        h = grid.h
+        nwalk = int(a.walkers)
+ (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==walk:[86:120]
+==walk_face:[89:123]
+    for _ in range(walkers):
+        i, j = si, sj
+        while True:
+            visits[i, j] += 1
+            steps_total += 1
+            i, j = step(i, j, rng)
+            if grid.is_bnd(i, j):
+                exits[i, j] += 1
+                break
+
+    return visits, exits, steps_total
+
+
+def main() -> None:
+    a = args()
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
+    grid = Grid(n=a.n, length=a.length)
+    start = grid.ij(a.start_x, a.start_y)
+
+    local_n = split(a.walkers, rank, size)
+    rng = np.random.default_rng(a.seed + 1000003 * rank)
+
+    v_loc, e_loc, s_loc = run(grid, start, local_n, rng)
+
+    v_glob = np.zeros_like(v_loc)
+    e_glob = np.zeros_like(e_loc)
+    s_glob = comm.allreduce(s_loc, op=MPI.SUM)
+
+    comm.Reduce(v_loc, v_glob, op=MPI.SUM, root=0)
+    comm.Reduce(e_loc, e_glob, op=MPI.SUM, root=0)
+ (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==mc_sigma:[85:112]
+==task4_calc:[85:114]
+    L = h * (n - 1)
+    f = np.zeros((n, n), dtype=float)
+
+    if case == "0_none":
+        return f
+
+    if case == "U_uniform_total10C":
+        # 10 C spread uniformly over 1 m^2 => 10 C m^-2
+        f[:, :] = 10.0
+        return f
+
+    if case == "G_gradient_top1_bottom0":
+        # y=0 bottom, y=L top; top=1, bottom=0
+        for i in range(n):
+            y = i * h
+            f[i, :] = y / L
+        return f
+
+    if case == "E_exp_center":
+        cx = 0.5 * L
+        cy = 0.5 * L
+        for i in range(n):
+            y = i * h
+            for j in range(n):
+                x = j * h
+                r = math.hypot(x - cx, y - cy)
+                f[i, j] = math.exp(-10.0 * r)
+        return f
+ (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==walk:[125:151]
+==walk_corner:[117:143]
+        g_exit_prob = e_glob.astype(np.float64) / nwalk
+        g_exit_sig = np.sqrt(g_exit_prob * (1.0 - g_exit_prob) / nwalk)
+
+        import os
+        os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
+        np.savez_compressed(
+            a.out,
+            n=a.n,
+            length=a.length,
+            h=h,
+            start_i=start[0],
+            start_j=start[1],
+            walkers=nwalk,
+            steps_total=int(s_glob),
+            visits=v_glob,
+            exits=e_glob,
+            g_charge=g_charge,
+            g_exit_prob=g_exit_prob,
+            g_exit_sig=g_exit_sig,
+        )
+        print(f"saved {a.out}")
+        print(f"n={a.n} h={h:.6g} start={start} walkers={nwalk} steps_total={s_glob}")
+
+
+if __name__ == "__main__":
+    main() (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==walk_corner:[18:44]
+==walk_face:[26:54]
+@dataclass(frozen=True)
+class Grid:
+    n: int
+    length: float
+
+    @property
+    def h(self) -> float:
+        return self.length / (self.n - 1)
+
+    def is_bnd(self, i: int, j: int) -> bool:
+        n = self.n
+        return i == 0 or j == 0 or i == n - 1 or j == n - 1
+
+    def ij(self, x: float, y: float) -> Tuple[int, int]:
+        i = int(round(y / self.h))
+        j = int(round(x / self.h))
+        i = max(0, min(self.n - 1, i))
+        j = max(0, min(self.n - 1, j))
+        return i, j
+
+
+def args() -> argparse.Namespace:
+    p = argparse.ArgumentParser()
+    p.add_argument("--n", type=int, default=51)
+    p.add_argument("--length", type=float, default=1.0)
+
+    # Face point defaults: (0.02 m, 0.50 m)
+    p.add_argument("--start-x", type=float, default=0.02) (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==walk_centre:[18:43]
+==walk_corner:[18:43]
+@dataclass(frozen=True)
+class Grid:
+    n: int
+    length: float
+
+    @property
+    def h(self) -> float:
+        return self.length / (self.n - 1)
+
+    def is_bnd(self, i: int, j: int) -> bool:
+        n = self.n
+        return i == 0 or j == 0 or i == n - 1 or j == n - 1
+
+    def ij(self, x: float, y: float) -> Tuple[int, int]:
+        i = int(round(y / self.h))
+        j = int(round(x / self.h))
+        i = max(0, min(self.n - 1, i))
+        j = max(0, min(self.n - 1, j))
+        return i, j
+
+
+def args() -> argparse.Namespace:
+    p = argparse.ArgumentParser()
+    p.add_argument("--n", type=int, default=51)
+    p.add_argument("--length", type=float, default=1.0) (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==walk:[26:51]
+==walk_face:[26:53]
+@dataclass(frozen=True)
+class Grid:
+    n: int
+    length: float
+
+    @property
+    def h(self) -> float:
+        return self.length / (self.n - 1)
+
+    def is_bnd(self, i: int, j: int) -> bool:
+        n = self.n
+        return i == 0 or j == 0 or i == n - 1 or j == n - 1
+
+    def ij(self, x: float, y: float) -> Tuple[int, int]:
+        i = int(round(y / self.h))
+        j = int(round(x / self.h))
+        i = max(0, min(self.n - 1, i))
+        j = max(0, min(self.n - 1, j))
+        return i, j
+
+
+def args() -> argparse.Namespace:
+    p = argparse.ArgumentParser()
+    p.add_argument("--n", type=int, default=51)
+    p.add_argument("--length", type=float, default=1.0) (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==walk:[67:84]
+==walk_face:[70:87]
+    if r == 0:
+        return i + 1, j
+    if r == 1:
+        return i - 1, j
+    if r == 2:
+        return i, j + 1
+    return i, j - 1
+
+
+def run(grid: Grid, start: Tuple[int, int], walkers: int, rng: np.random.Generator):
+    n = grid.n
+    visits = np.zeros((n, n), dtype=np.int64)
+    exits = np.zeros((n, n), dtype=np.int64)
+    steps_total = 0
+
+    si, sj = start
+    if grid.is_bnd(si, sj): (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==walk:[137:151]
+==walk_face:[142:157]
+            walkers=nwalk,
+            steps_total=int(s_glob),
+            visits=v_glob,
+            exits=e_glob,
+            g_charge=g_charge,
+            g_exit_prob=g_exit_prob,
+            g_exit_sig=g_exit_sig,
+        )
+        print(f"saved {a.out}")
+        print(f"n={a.n} h={h:.6g} start={start} walkers={nwalk} steps_total={s_glob}")
+
+
+if __name__ == "__main__":
+    main() (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==walk_corner:[113:127]
+==walk_face:[126:140]
+        h = grid.h
+        nwalk = int(a.walkers)
+
+        g_charge = 0.25 * (h * h) * (v_glob.astype(np.float64) / nwalk)
+        g_exit_prob = e_glob.astype(np.float64) / nwalk
+        g_exit_sig = np.sqrt(g_exit_prob * (1.0 - g_exit_prob) / nwalk)
+
+        import os
+        os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
+        np.savez_compressed(
+            a.out,
+            n=a.n,
+            length=a.length,
+            h=h, (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==task4_calc:[104:119]
+==task5_sor:[120:133]
+        cx = 0.5 * L
+        cy = 0.5 * L
+        for i in range(n):
+            y = i * h
+            for j in range(n):
+                x = j * h
+                r = math.hypot(x - cx, y - cy)
+                f[i, j] = math.exp(-10.0 * r)
+        return f
+
+    raise ValueError(f"Unknown charge case: {case}")
+
+ (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==mc_sigma:[102:112]
+==task5_sor:[120:130]
+        cx = 0.5 * L
+        cy = 0.5 * L
+        for i in range(n):
+            y = i * h
+            for j in range(n):
+                x = j * h
+                r = math.hypot(x - cx, y - cy)
+                f[i, j] = math.exp(-10.0 * r)
+        return f
+ (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==walk:[125:135]
+==walk_face:[130:140]
+        g_exit_prob = e_glob.astype(np.float64) / nwalk
+        g_exit_sig = np.sqrt(g_exit_prob * (1.0 - g_exit_prob) / nwalk)
+
+        import os
+        os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
+        np.savez_compressed(
+            a.out,
+            n=a.n,
+            length=a.length,
+            h=h, (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==compare:[59:69]
+==compare_sigma:[67:77]
+    with out_path.open("w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(out_rows[0].keys()))
+        w.writeheader()
+        w.writerows(out_rows)
+
+    print(f"wrote {out_path}")
+
+
+if __name__ == "__main__":
+    main() (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==err:[12:21]
+==task5_sor:[43:58]
+    m = np.zeros((n, n), dtype=bool)
+    m[0, :] = True
+    m[-1, :] = True
+    m[:, 0] = True
+    m[:, -1] = True
+    return m
+
+
+def build_boundary_potential(n: int, length: float, case: str) -> np.ndarray:
+    """
+    Boundary cases (Dirichlet potentials, volts):
+      A: all edges +100
+      B: top/bottom +100, left/right -100
+      C: top and left +200, bottom 0, right -400
+    """ (duplicate-code)
+task4-5/compare.py:1:0: R0801: Similar lines in 2 files
+==solver:[38:43]
+==task5_sor:[135:161]
+    phi: np.ndarray
+    iters: int
+    converged: bool
+    max_update: float
+    omega: float
+
+
+def solve_sor(
+    phi_b: np.ndarray,
+    f: np.ndarray,
+    *,
+    length: float,
+    omega: float,
+    tol: float,
+    max_iters: int,
+) -> SORResult:
+    """
+    Solve discrete Poisson equation using in-place Gauss-Seidel SOR.
+
+    Discrete stencil:
+      (sum(neighbors) - 4*phi) / h^2 = f
+    => phi_target = (sum(neighbors) - h^2*f) / 4
+
+    SOR:
+      phi_new = (1-omega)*phi_old + omega*phi_target
+    """ (duplicate-code)
+
+-----------------------------------
+Your code has been rated at 9.58/10
+

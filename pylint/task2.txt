@@ -1,0 +1,18 @@
+************* Module walk
+task2/walk.py:28:0: C0115: Missing class docstring (missing-class-docstring)
+task2/walk.py:33:4: C0116: Missing function or method docstring (missing-function-docstring)
+task2/walk.py:36:4: C0116: Missing function or method docstring (missing-function-docstring)
+task2/walk.py:40:4: C0116: Missing function or method docstring (missing-function-docstring)
+task2/walk.py:48:0: C0116: Missing function or method docstring (missing-function-docstring)
+task2/walk.py:60:0: C0116: Missing function or method docstring (missing-function-docstring)
+task2/walk.py:66:0: C0116: Missing function or method docstring (missing-function-docstring)
+task2/walk.py:77:0: C0116: Missing function or method docstring (missing-function-docstring)
+task2/walk.py:100:0: C0116: Missing function or method docstring (missing-function-docstring)
+task2/walk.py:100:0: R0914: Too many local variables (20/15) (too-many-locals)
+task2/walk.py:129:8: C0415: Import outside toplevel (os) (import-outside-toplevel)
+************* Module plot
+task2/plot.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+
+------------------------------------------------------------------
+Your code has been rated at 8.86/10 (previous run: 8.11/10, +0.75)
+

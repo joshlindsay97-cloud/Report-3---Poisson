@@ -1,0 +1,28 @@
+************* Module run
+task1/run.py:20:0: C0116: Missing function or method docstring (missing-function-docstring)
+************* Module solver
+task1/solver.py:164:0: C0301: Line too long (102/100) (line-too-long)
+task1/solver.py:166:0: C0301: Line too long (102/100) (line-too-long)
+task1/solver.py:38:0: C0115: Missing class docstring (missing-class-docstring)
+task1/solver.py:69:24: W0613: Unused argument 'length_m' (unused-argument)
+task1/solver.py:88:0: R0913: Too many arguments (8/5) (too-many-arguments)
+task1/solver.py:88:0: R0917: Too many positional arguments (8/5) (too-many-positional-arguments)
+task1/solver.py:88:0: R0914: Too many local variables (20/15) (too-many-locals)
+task1/solver.py:157:16: R1731: Consider using 'max_update = max(max_update, diff)' instead of unnecessary if block (consider-using-max-builtin)
+************* Module plot
+task1/plot.py:36:0: C0301: Line too long (109/100) (line-too-long)
+task1/plot.py:47:0: C0301: Line too long (104/100) (line-too-long)
+task1/plot.py:34:0: C0116: Missing function or method docstring (missing-function-docstring)
+task1/plot.py:40:0: C0116: Missing function or method docstring (missing-function-docstring)
+task1/plot.py:47:0: C0116: Missing function or method docstring (missing-function-docstring)
+task1/plot.py:47:0: R0913: Too many arguments (6/5) (too-many-arguments)
+task1/plot.py:47:17: W0613: Unused argument 'path' (unused-argument)
+task1/plot.py:57:0: C0116: Missing function or method docstring (missing-function-docstring)
+task1/plot.py:57:0: C0103: Function name "save_dev_uV" doesn't conform to snake_case naming style (invalid-name)
+task1/plot.py:58:4: C0103: Variable name "dev_uV" doesn't conform to snake_case naming style (invalid-name)
+task1/plot.py:57:16: W0613: Unused argument 'path' (unused-argument)
+task1/plot.py:68:0: C0116: Missing function or method docstring (missing-function-docstring)
+
+-----------------------------------
+Your code has been rated at 8.46/10
+
