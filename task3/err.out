@@ -1,0 +1,21 @@
+center: file=out/greens_center.npz
+  start=(i=25, j=25) walkers=200000
+  sum(exit prob)        = 1.000000000000
+  mean sigma (boundary) = 1.493411e-04
+  max  sigma (boundary) = 2.083658e-04
+  max exit prob (bnd)   = 8.760000e-03
+
+corner: file=out/greens_corner.npz
+  start=(i=1, j=1) walkers=200000
+  sum(exit prob)        = 1.000000000000
+  mean sigma (boundary) = 4.318381e-05
+  max  sigma (boundary) = 1.028219e-03
+  max exit prob (bnd)   = 3.036500e-01
+
+face: file=out/greens_face.npz
+  start=(i=25, j=1) walkers=200000
+  sum(exit prob)        = 1.000000000000
+  mean sigma (boundary) = 6.934874e-05
+  max  sigma (boundary) = 1.076029e-03
+  max exit prob (bnd)   = 3.642350e-01
+

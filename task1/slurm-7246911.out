@@ -1,0 +1,9 @@
+Python 3.9.21
+n=51 h=0.02 omega=1.88402
+iters=202 converged=True max_update=5.134e-09
+phi(center)=50 V
+saved: out/phi_n51_bcall100_chargenone.npz
+n=51 h=0.02 omega=1.88402
+iters=202 converged=True max_update=5.134e-09
+phi(center)=50 V
+saved: out/phi_n51_bcall100_chargenone.npz

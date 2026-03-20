@@ -1,0 +1,25 @@
+Removing mpi version 2021.6.0
+Use `module list` to view any remaining dependent modules.
+Loading mpi version 2021.6.0
+rank 10 of 16
+rank 13 of 16
+rank 15 of 16
+rank 12 of 16
+rank 7 of 16
+rank 2 of 16
+rank 8 of 16
+rank 9 of 16
+rank 4 of 16
+rank 11 of 16
+rank 5 of 16
+rank 3 of 16
+rank 0 of 16
+rank 1 of 16
+rank 14 of 16
+rank 6 of 16
+saved out/greens_center.npz
+n=51 h=0.02 start=(25, 25) walkers=200000 steps_total=147366352
+saved out/greens_corner.npz
+n=51 h=0.02 start=(1, 1) walkers=200000 steps_total=1854058
+saved out/greens_face.npz
+n=51 h=0.02 start=(25, 25) walkers=200000 steps_total=147366352

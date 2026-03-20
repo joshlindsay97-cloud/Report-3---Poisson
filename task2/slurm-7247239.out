@@ -1,0 +1,5 @@
+Loading mpi version 2021.6.0
+MPI startup(): PMI server not found. Please set I_MPI_PMI_LIBRARY variable if it is not a singleton case.
+MPI: Intel(R) MPI Library 2021.6 for Linux* OS
+saved out/greens.npz
+n=51 h=0.02 start=(25, 25) walkers=200000 steps_total=147366352

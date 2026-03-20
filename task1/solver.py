@@ -1,15 +1,29 @@
 #!/usr/bin/env python3
-
 """
+task1/solver.py
+
 Task 1: Deterministic relaxation / over-relaxation (SOR) Poisson solver on a 2D square grid.
 
 Conventions
+-----------
 - Array phi[i, j] where i is y-index (0 bottom -> n-1 top), j is x-index (0 left -> n-1 right).
 - Dirichlet boundary conditions: boundary phi values are fixed each iteration.
-    phi'_{i,j} = ω [ f_{i,j} + 1/4*(neighbors) ] + (1-ω) phi_{i,j}
-Optimal ω:
+
+Discrete Poisson stencil (standard 5-point)
+-------------------------------------------
+    (phi[i+1,j] + phi[i-1,j] + phi[i,j+1] + phi[i,j-1] - 4*phi[i,j]) / h^2 = f[i,j]
+
+Rearrange:
+    phi_target = (neighbors_sum - h^2 * f[i,j]) / 4
+
+SOR update:
+    phi_new = (1 - ω) * phi_old + ω * phi_target
+
+Optimal ω (hint from sheet)
+---------------------------
     ω = 2 / (1 + sin(pi/N))
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -37,12 +51,18 @@ def omega_optimal(n: int) -> float:
     return 2.0 / (1.0 + math.sin(math.pi / n))
 
 
-def apply_boundary(phi: np.ndarray, length_m: float, bc: BoundaryCase) -> None:
+def apply_boundary(phi: np.ndarray, bc: BoundaryCase) -> None:
+    """
+    Apply simple Dirichlet boundary conditions.
+
+    all0:   all edges 0 V
+    all100: all edges 100 V
+    """
     value = 0.0 if bc == "all0" else 100.0
-    phi[0, :] = value
-    phi[-1, :] = value
-    phi[:, 0] = value
-    phi[:, -1] = value
+    phi[0, :] = value      # bottom
+    phi[-1, :] = value     # top
+    phi[:, 0] = value      # left
+    phi[:, -1] = value     # right
 
 
 def make_charge(n: int, length_m: float, case: str) -> np.ndarray:
@@ -50,14 +70,17 @@ def make_charge(n: int, length_m: float, case: str) -> np.ndarray:
     Create a charge density field f (C m^-2).
     """
     f = np.zeros((n, n), dtype=float)
+
     if case == "none":
         return f
+
     if case == "spike":
         # single-site spike at center (testing only)
         i = (n - 1) // 2
         j = (n - 1) // 2
         f[i, j] = 1.0
         return f
+
     raise ValueError(f"Unknown charge case: {case}")
 
 
@@ -104,7 +127,9 @@ def solve_poisson_sor(
     w = omega_optimal(n) if omega is None else float(omega)
 
     phi = np.zeros((n, n), dtype=float) if phi0 is None else np.array(phi0, copy=True, dtype=float)
-    apply_boundary(phi, length_m, bc)
+
+    # initialise + enforce boundary
+    apply_boundary(phi, bc)
 
     for it in range(1, max_iters + 1):
         max_update = 0.0
@@ -112,14 +137,27 @@ def solve_poisson_sor(
         for i in range(1, n - 1):
             for j in range(1, n - 1):
                 old = phi[i, j]
-                nb = 0.25 * (phi[i + 1, j] + phi[i - 1, j] + phi[i, j + 1] + phi[i, j - 1])
-                new = w * (f[i, j] + nb) + (1.0 - w) * old
+
+                nb_sum = (
+                    phi[i + 1, j]
+                    + phi[i - 1, j]
+                    + phi[i, j + 1]
+                    + phi[i, j - 1]
+                )
+
+                # Standard discrete Poisson target
+                target = 0.25 * (nb_sum - (h * h) * f[i, j])
+
+                # SOR update
+                new = (1.0 - w) * old + w * target
                 phi[i, j] = new
+
                 diff = abs(new - old)
                 if diff > max_update:
                     max_update = diff
 
-        apply_boundary(phi, length_m, bc)
+        # enforce boundary each iteration (Dirichlet)
+        apply_boundary(phi, bc)
 
         if max_update < tol:
             return SolveResult(phi=phi, iters=it, converged=True, max_update=max_update, omega=w, h=h)

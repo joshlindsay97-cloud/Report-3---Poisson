@@ -20,7 +20,7 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--n", type=int, default=51)
     p.add_argument("--length", type=float, default=1.0)
-    p.add_argument("--bc", choices=["all0", "all100"], default="all0")
+    p.add_argument("--bc", choices=["all0", "all100"], default="all100")
     p.add_argument("--charge", choices=["none", "spike"], default="none")
     p.add_argument("--tol", type=float, default=1e-8)
     p.add_argument("--max-iters", type=int, default=200_000)
